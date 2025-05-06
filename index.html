@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -550,6 +550,11 @@
                 doc.text("Examination Officer", 20, yPosition);
                 yPosition += 10;
                 doc.text("University Name", 20, yPosition);
+
+                doc.setFillColor(255, 0, 0);
+                doc.rect(140, yPosition - 20, 50, 20, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.text("APPROVED", 145, yPosition - 10);
 
                 doc.save(`clearance_${student.matric}.pdf`);
             } catch (error) {
