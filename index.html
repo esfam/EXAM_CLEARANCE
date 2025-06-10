@@ -1,0 +1,672 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNI-EXAM | Complete Exam Clearance System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--light);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--primary);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--white);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+
+        .hero {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)),
+                        url('https://via.placeholder.com/1920x1080/2c3e50/ecf0f1?text=UNI-EXAM') center/cover;
+            color: var(--white);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        input, select, .file-upload {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+        }
+
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            background: var(--light);
+            text-align: center;
+        }
+
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--white);
+        }
+
+        .pending { background: #f39c12; }
+        .approved { background: var(--success); }
+        .rejected { background: var(--danger); }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary { background: var(--secondary); color: var(--white); }
+        .btn-success { background: var(--success); color: var(--white); }
+        .btn-danger { background: var(--danger); color: var(--white); }
+
+        .student-card {
+            background: var(--white);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .hero {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <h1>UNI-EXAM</h1>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="showSection('studentRegister')">Student Register</button>
+            <button class="btn btn-success" onclick="showSection('studentLogin')">Student Login</button>
+            <button class="btn btn-danger" onclick="showAdminLogin()">Admin Login</button>
+        </div>
+    </header>
+
+    <div id="mainContent">
+        <!-- Homepage -->
+        <section class="hero" id="homepage">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-book-open"></i>
+                    <h3>Our Mission</h3>
+                    <p>To provide seamless exam clearance processes through digital innovation</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-eye"></i>
+                    <h3>Our Vision</h3>
+                    <p>To become Africa's leading digital examination management platform</p>
+                </div>
+            </div>
+            <div style="margin-top: 2rem;">
+                <button class="btn btn-success" onclick="showSection('statusCheck')">Check Status</button>
+            </div>
+        </section>
+
+        <!-- Student Registration -->
+        <section class="form-section" id="studentRegister" style="display:none;">
+            <h2>Student Registration</h2>
+            <form onsubmit="handleStudentRegistration(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="regName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Matric Number *</label>
+                        <input type="text" id="regMatric" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="regPassword" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" onclick="showSection('homepage')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Student Login -->
+        <section class="form-section" id="studentLogin" style="display:none;">
+            <h2>Student Login</h2>
+            <form onsubmit="handleStudentLogin(event)">
+                <div class="form-group">
+                    <label>Matric Number</label>
+                    <input type="text" id="loginMatric" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" onclick="showSection('homepage')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Student Dashboard -->
+        <section class="form-section" id="studentDashboard" style="display:none;">
+            <h2>Semester Registration <button class="btn btn-danger" onclick="handleLogout()" style="float:right;">Logout</button></h2>
+            <form onsubmit="handleSemesterRegistration(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Faculty *</label>
+                        <select id="faculty" required onchange="updateDepartments()">
+                            <option value="">Select Faculty</option>
+                            <option value="Science">Faculty of Science</option>
+                            <option value="Engineering">Faculty of Engineering</option>
+                            <option value="Social Sciences">Faculty of Social Sciences</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Department *</label>
+                        <select id="department" required onchange="updateCourses()">
+                            <option value="">Select Department</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Level *</label>
+                        <select id="level" required>
+                            <option value="100">100 Level</option>
+                            <option value="200">200 Level</option>
+                            <option value="300">300 Level</option>
+                            <option value="400">400 Level</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Semester *</label>
+                        <select id="semester" required>
+                            <option value="First">First Semester</option>
+                            <option value="Second">Second Semester</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Passport Photo *</label>
+                        <div class="file-upload">
+                            <input type="file" id="passport" accept="image/*" required>
+                            <span id="passportLabel">Click to upload</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Tuition Receipt *</label>
+                        <div class="file-upload">
+                            <input type="file" id="receipt" accept=".pdf,.jpg,.png" required>
+                            <span id="receiptLabel">Click to upload</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="course-list" id="courseContainer">
+                    <h3>Select Courses (7 required)</h3>
+                    <div id="courseList"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Submit Registration</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Admin Dashboard -->
+        <section class="form-section" id="adminDashboard" style="display:none;">
+            <h2>Admin Dashboard <button class="btn btn-danger" onclick="handleLogout()" style="float:right;">Logout</button></h2>
+            <div id="applicationsList"></div>
+        </section>
+
+        <!-- Status Check -->
+        <section class="form-section" id="statusCheck" style="display:none;">
+            <h2>Check Clearance Status</h2>
+            <form onsubmit="checkStatus(event)">
+                <div class="form-group">
+                    <label>Enter Matric Number:</label>
+                    <input type="text" id="checkMatric" required placeholder="MATRIC2023/001">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" onclick="showSection('homepage')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Check Status</button>
+                </div>
+            </form>
+            <div id="statusResult" style="margin-top: 1rem;"></div>
+        </section>
+
+        <!-- View Modal -->
+        <div class="modal" id="viewModal">
+            <div class="modal-content">
+                <h3>Application Details</h3>
+                <div id="modalContent"></div>
+                <button class="btn btn-danger" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Structures
+        const departments = {
+            "Science": ["Computer Science", "Biochemistry", "Microbiology"],
+            "Engineering": ["Electrical Engineering", "Mechanical Engineering", "Civil Engineering"],
+            "Social Sciences": ["Economics", "Sociology", "Political Science"]
+        };
+
+        const courses = {
+            "Computer Science": [
+                "Intro to Programming", "Data Structures", "Algorithms",
+                "Database Systems", "Operating Systems", "Computer Networks",
+                "Software Engineering"
+            ],
+            "Electrical Engineering": [
+                "Circuit Theory", "Electronics", "Power Systems",
+                "Control Systems", "Digital Signal Processing",
+                "Renewable Energy", "Electrical Machines"
+            ]
+        };
+
+        // Data Stores
+        let studentAccounts = JSON.parse(localStorage.getItem('students')) || [];
+        let applications = JSON.parse(localStorage.getItem('applications')) || [];
+        const adminCredentials = { username: 'admin', password: 'admin123' };
+        let currentUser = null;
+
+        // Core Functions
+        function showSection(sectionId) {
+            document.querySelectorAll('.form-section, #homepage').forEach(el => el.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        function handleStudentRegistration(e) {
+            e.preventDefault();
+            const student = {
+                name: document.getElementById('regName').value.trim(),
+                matric: document.getElementById('regMatric').value.trim().toUpperCase(),
+                password: document.getElementById('regPassword').value
+            };
+            
+            if(studentAccounts.some(s => s.matric === student.matric)) {
+                alert('Matric number already registered!');
+                return;
+            }
+            
+            studentAccounts.push(student);
+            localStorage.setItem('students', JSON.stringify(studentAccounts));
+            alert('Registration successful! Please login.');
+            showSection('studentLogin');
+        }
+
+        function handleStudentLogin(e) {
+            e.preventDefault();
+            const matric = document.getElementById('loginMatric').value.trim().toUpperCase();
+            const password = document.getElementById('loginPassword').value;
+            
+            const student = studentAccounts.find(s => s.matric === matric && s.password === password);
+            if(student) {
+                currentUser = student;
+                showSection('studentDashboard');
+                initializeRegistrationForm();
+            } else {
+                alert('Invalid credentials!');
+            }
+        }
+
+        function initializeRegistrationForm() {
+            document.getElementById('faculty').value = '';
+            document.getElementById('department').innerHTML = '<option value="">Select Department</option>';
+            document.getElementById('courseList').innerHTML = '';
+            document.getElementById('passportLabel').textContent = 'Click to upload';
+            document.getElementById('receiptLabel').textContent = 'Click to upload';
+        }
+
+        function updateDepartments() {
+            const faculty = document.getElementById('faculty').value;
+            const deptSelect = document.getElementById('department');
+            deptSelect.innerHTML = '<option value="">Select Department</option>';
+            
+            if(faculty && departments[faculty]) {
+                departments[faculty].forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept;
+                    option.textContent = dept;
+                    deptSelect.appendChild(option);
+                });
+            }
+            updateCourses();
+        }
+
+        function updateCourses() {
+            const dept = document.getElementById('department').value;
+            const container = document.getElementById('courseList');
+            container.innerHTML = '';
+            
+            if(dept && courses[dept]) {
+                courses[dept].forEach(course => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <label>
+                            <input type="checkbox" class="course-checkbox" value="${course}">
+                            ${course}
+                        </label>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        async function handleSemesterRegistration(e) {
+            e.preventDefault();
+            const selectedCourses = Array.from(document.querySelectorAll('.course-checkbox:checked'))
+                                       .map(cb => cb.value);
+
+            if(selectedCourses.length !== 7) {
+                alert('Please select exactly 7 courses');
+                return;
+            }
+
+            try {
+                const application = {
+                    ...currentUser,
+                    faculty: document.getElementById('faculty').value,
+                    department: document.getElementById('department').value,
+                    level: document.getElementById('level').value,
+                    semester: document.getElementById('semester').value,
+                    phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
+                    courses: selectedCourses,
+                    passport: await toBase64(document.getElementById('passport').files[0]),
+                    receipt: await toBase64(document.getElementById('receipt').files[0]),
+                    status: 'pending',
+                    date: new Date().toISOString()
+                };
+
+                applications = applications.filter(app => app.matric !== application.matric);
+                applications.push(application);
+                localStorage.setItem('applications', JSON.stringify(applications));
+                alert('Registration submitted successfully!');
+                showSection('homepage');
+            } catch(error) {
+                alert('Error processing files: ' + error.message);
+            }
+        }
+
+        function showAdminLogin() {
+            const username = prompt('Username:');
+            const password = prompt('Password:');
+            
+            if(username === adminCredentials.username && password === adminCredentials.password) {
+                showSection('adminDashboard');
+                loadApplications();
+            } else {
+                alert('Invalid credentials!');
+            }
+        }
+
+        function loadApplications() {
+            const container = document.getElementById('applicationsList');
+            container.innerHTML = applications.map(app => `
+                <div class="student-card">
+                    <h3>${app.name} (${app.matric})</h3>
+                    <p>${app.faculty} - ${app.department}</p>
+                    <p>Status: <span class="status-badge ${app.status}">${app.status}</span></p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-primary" onclick="viewApplication('${app.matric}')">View</button>
+                        ${app.status === 'pending' ? `
+                            <button class="btn btn-success" onclick="updateStatus('${app.matric}', 'approved')">Approve</button>
+                            <button class="btn btn-danger" onclick="updateStatus('${app.matric}', 'rejected')">Reject</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStatus(matric, status) {
+            const app = applications.find(a => a.matric === matric);
+            app.status = status;
+            localStorage.setItem('applications', JSON.stringify(applications));
+            loadApplications();
+        }
+
+        function viewApplication(matric) {
+            const app = applications.find(a => a.matric === matric);
+            const content = `
+                <p><strong>Name:</strong> ${app.name}</p>
+                <p><strong>Matric:</strong> ${app.matric}</p>
+                <p><strong>Faculty:</strong> ${app.faculty}</p>
+                <p><strong>Department:</strong> ${app.department}</p>
+                <p><strong>Level:</strong> ${app.level}</p>
+                <p><strong>Semester:</strong> ${app.semester}</p>
+                <p><strong>Courses:</strong> ${app.courses.join(', ')}</p>
+                <img src="${app.passport}" style="max-width: 200px; margin-top: 1rem;">
+            `;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('viewModal').style.display = 'flex';
+        }
+
+        function checkStatus(e) {
+            e.preventDefault();
+            const matric = document.getElementById('checkMatric').value.trim().toUpperCase();
+            const app = applications.find(a => a.matric === matric);
+            const resultDiv = document.getElementById('statusResult');
+            
+            if(!app) {
+                resultDiv.innerHTML = '<div class="status-badge pending">No application found</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = `
+                <div class="status-header">
+                    <h3>${app.name}</h3>
+                    <span class="status-badge ${app.status}">${app.status.toUpperCase()}</span>
+                </div>
+                <div class="status-details">
+                    <p>Matric: ${app.matric}</p>
+                    <p>Faculty: ${app.faculty}</p>
+                    <p>Department: ${app.department}</p>
+                    ${app.status === 'approved' ? `
+                        <button onclick="generatePDF('${app.matric}')" class="btn btn-success">
+                            Download Exam Docket
+                        </button>
+                    ` : app.status === 'rejected' ? `
+                        <div class="alert">
+                            <p>Application rejected. Please:</p>
+                            <ul>
+                                <li>Contact examination office</li>
+                                <li>Or re-register with correct details</li>
+                            </ul>
+                        </div>
+                    ` : `
+                        <div class="status-badge pending">Application pending review</div>
+                    `}
+                </div>
+            `;
+        }
+
+        function generatePDF(matric) {
+            const app = applications.find(a => a.matric === matric);
+            const doc = new jspdf.jsPDF();
+            
+            // Set document properties
+            doc.setFontSize(14);
+            
+            // Add passport photo
+            doc.addImage(app.passport, 'JPEG', 140, 20, 50, 50);
+            
+            // Student Information
+            doc.text(`Name: ${app.name}`, 20, 20);
+            doc.text(`Matric: ${app.matric}`, 20, 30);
+            doc.text(`Faculty: ${app.faculty}`, 20, 40);
+            doc.text(`Department: ${app.department}`, 20, 50);
+            doc.text(`Level: ${app.level}`, 20, 60);
+            doc.text(`Semester: ${app.semester}`, 20, 70);
+            doc.text(`Phone: ${app.phone}`, 20, 80);
+            doc.text(`Email: ${app.email}`, 20, 90);
+
+            // Declaration
+            doc.setFontSize(16).text("EXAM CLEARANCE CERTIFICATE", 105, 100, { align: 'center' });
+            doc.setFontSize(14).text("This is to certify that ${app.name} has fulfilled all academic", 20, 110);
+            doc.text("requirements and is hereby permitted to sit for the ${app.semester} semester", 20, 118);
+            doc.text("examinations in the ${app.department}, ${app.faculty}.", 20, 126);
+
+            // Courses
+            doc.text("Registered Courses:", 20, 140);
+            app.courses.forEach((course, index) => {
+                const yPos = 150 + (index * 10);
+                doc.text(`${index + 1}. ${course}`, 30, yPos);
+                doc.text("Invigilator Signature: ___________________", 120, yPos);
+            });
+
+            // Stamps
+            doc.setTextColor(255, 0, 0).text("HOD Stamp & Signature", 20, 280);
+            doc.setTextColor(0, 0, 255).text("Examiner Stamp & Signature", 120, 280);
+
+            doc.save(`${app.matric}_exam_docket.pdf`);
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            showSection('homepage');
+        }
+
+        function closeModal() {
+            document.getElementById('viewModal').style.display = 'none';
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Initialize
+        showSection('homepage');
+    </script>
+</body>
+</html>
